@@ -123,6 +123,11 @@ The `vpk pack` command (`PackageBuilder<T>` in `Velopack.Packaging`) runs platfo
 
 4. **Post-processing**: Writes `releases.<channel>.json` (asset feed for update clients) and legacy `RELEASES` file.
 
+**`--signTemplate`** (`CodeSign.Sign`): the template is a shell command, run by `cmd.exe /C` on Windows and by
+`bash -c` on Linux/macOS (passed via `ArgumentList`, unescaped, so quotes/`$VAR`/backticks behave as in bash).
+On bash, `{{file}}` is replaced with `'\''`-escaped single-quoted paths, closing any `"`/`'` string the
+placeholder sits in so each path stays one word. Do not reintroduce template escaping.
+
 ## Locators
 
 Locators (`IVelopackLocator` in C#, `VelopackLocator` in Rust) resolve platform-specific paths and app metadata. Both implementations follow the same logic and must stay in sync. All locators read app identity (ID, version, channel) from a `sq.version` manifest file.
@@ -178,6 +183,8 @@ stack (Gitea, GitLab, Azurite, S3Mock), except GitHub which is live and uses a 5
   ```
   GitLab takes several minutes to become healthy on first boot; other services are up in seconds.
 - Tests **self-skip (never fail)** when a service, toolchain, or token is unavailable.
+- **Live GitHub tests are currently disabled** (`DeploymentTestEnv.GitHubTestsDisabled = true`): their lock-pool
+  polling shares the CI token's API rate limit and starved concurrent runs. Flip the flag to re-enable.
 - Live GitHub tests need the `VELOPACK_DEPLOYMENT_TEST_TOKEN` env var (on Windows a User-level
   variable works — tests also read `EnvironmentVariableTarget.User`).
 - Language harnesses are built once per test session (cargo / npm / maturin venv / cmake); a

@@ -19,6 +19,9 @@
   "automergeType": "pr",
   "automergeStrategy": "rebase",
   "platformAutomerge": false,
+  // only rebase on conflicts and only touch branches inside the schedule, so develop pushes do not re-run CI on every PR
+  "rebaseWhen": "conflicted",
+  "updateNotScheduled": false,
   // automatically upgrade lockfiles and automerge
   "lockFileMaintenance": {
     "enabled": true,
@@ -93,15 +96,14 @@
       "separateMajorMinor": false,
       "automerge": true
     },
+    // gitea 1.22/1.24 test images are intentional old-server compatibility pins (gitea:latest covers new releases)
+    {
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["gitea/gitea"],
+      "matchFileNames": ["test/Velopack.Deployment.Tests/docker/docker-compose.yml"],
+      "enabled": false
+    },
     // held-back packages
-    {
-      "matchPackageNames": "SixLabors.ImageSharp",
-      "allowedVersions": "< 3.0.0"
-    },
-    {
-      "matchPackageNames": "@electron/fuses",
-      "allowedVersions": "< 2.0.0" // @electron-forge/plugin-fuses 7.x peer-depends on @electron/fuses ^1
-    },
     {
       "matchPackageNames": "typescript",
       "matchFileNames": ["samples/NodeJSElectron/**"],
